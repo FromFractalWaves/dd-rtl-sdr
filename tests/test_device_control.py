@@ -1,128 +1,64 @@
-# tests/test_device_control.py
-
 import pytest
-from unittest.mock import patch, MagicMock
 
 from src.ddrtlsdr.device_control import DeviceControl
 from src.ddrtlsdr.models import SDRDevice
 
 @pytest.fixture
-def mock_rtl():
-    with patch('src.ddrtlsdr.librtlsdr_wrapper.rtl') as mock_rtl_lib:
-        mock_rtl_lib.rtlsdr_open.return_value = 0
-        mock_rtl_lib.rtlsdr_close.return_value = None
-        mock_rtl_lib.rtlsdr_set_center_freq.return_value = 0
-        mock_rtl_lib.rtlsdr_get_center_freq.return_value = 100000000  # 100 MHz
-        mock_rtl_lib.rtlsdr_set_sample_rate.return_value = 0
-        mock_rtl_lib.rtlsdr_get_sample_rate.return_value = 2000000  # 2 MHz
-        mock_rtl_lib.rtlsdr_set_tuner_gain.return_value = 0
-        mock_rtl_lib.rtlsdr_get_tuner_gain.return_value = 10
-        mock_rtl_lib.rtlsdr_read_async.return_value = 0
-        return mock_rtl_lib
+def sdr_device_control():
+    return DeviceControl()
 
 @pytest.fixture
-def mock_handle():
-    return MagicMock()
+def sdr_device(sdr_device_control):
+    # Assumes the device index 0 corresponds to a valid SDR device connected to the system
+    devices = sdr_device_control.list_devices()
+    if not devices:
+        pytest.fail("No SDR devices available for testing.")
+    return devices[0]
 
-@pytest.fixture
-def device_control(mock_rtl, mock_handle):
-    with patch('src.ddrtlsdr.device_control.open_device', return_value=mock_handle) as mock_open, \
-         patch('src.ddrtlsdr.device_control.close_device', return_value=None) as mock_close:
-        return DeviceControl()
+def test_set_center_frequency(sdr_device_control, sdr_device):
+    freq_to_set = 105_000_000  # 105 MHz
+    sdr_device_control.set_center_frequency(sdr_device, freq_to_set)
+    freq = sdr_device_control.get_center_frequency(sdr_device)
+    assert freq == freq_to_set, f"Expected frequency {freq_to_set}, got {freq}"
 
-def test_set_center_frequency(device_control, mock_rtl, mock_handle):
-    device = SDRDevice(
-        index=0,
-        name="Device1",
-        serial="Serial1",
-        manufacturer="Manufacturer1",
-        product="Product1"
-    )
-    device_control.set_center_frequency(device, 105000000)  # 105 MHz
-    mock_rtl.rtlsdr_set_center_freq.assert_called_with(mock_handle, 105000000)
+def test_get_center_frequency(sdr_device_control, sdr_device):
+    freq = sdr_device_control.get_center_frequency(sdr_device)
+    assert freq > 0, f"Expected a positive frequency, got {freq}"
 
-def test_get_center_frequency(device_control, mock_rtl, mock_handle):
-    device = SDRDevice(
-        index=0,
-        name="Device1",
-        serial="Serial1",
-        manufacturer="Manufacturer1",
-        product="Product1"
-    )
-    freq = device_control.get_center_frequency(device)
-    assert freq == 100000000
-    mock_rtl.rtlsdr_get_center_freq.assert_called_with(mock_handle)
+def test_set_sample_rate(sdr_device_control, sdr_device):
+    sample_rate_to_set = 2_500_000  # 2.5 MHz
+    sdr_device_control.set_sample_rate(sdr_device, sample_rate_to_set)
+    rate = sdr_device_control.get_sample_rate(sdr_device)
+    assert rate == sample_rate_to_set, f"Expected sample rate {sample_rate_to_set}, got {rate}"
 
-def test_set_sample_rate(device_control, mock_rtl, mock_handle):
-    device = SDRDevice(
-        index=0,
-        name="Device1",
-        serial="Serial1",
-        manufacturer="Manufacturer1",
-        product="Product1"
-    )
-    device_control.set_sample_rate(device, 2500000)  # 2.5 MHz
-    mock_rtl.rtlsdr_set_sample_rate.assert_called_with(mock_handle, 2500000)
+def test_get_sample_rate(sdr_device_control, sdr_device):
+    rate = sdr_device_control.get_sample_rate(sdr_device)
+    assert rate > 0, f"Expected a positive sample rate, got {rate}"
 
-def test_get_sample_rate(device_control, mock_rtl, mock_handle):
-    device = SDRDevice(
-        index=0,
-        name="Device1",
-        serial="Serial1",
-        manufacturer="Manufacturer1",
-        product="Product1"
-    )
-    rate = device_control.get_sample_rate(device)
-    assert rate == 2000000
-    mock_rtl.rtlsdr_get_sample_rate.assert_called_with(mock_handle)
+def test_set_gain(sdr_device_control, sdr_device):
+    gain_to_set = 15  # Example gain value
+    sdr_device_control.set_gain(sdr_device, gain_to_set)
+    gain = sdr_device_control.get_gain(sdr_device)
+    assert gain == gain_to_set, f"Expected gain {gain_to_set}, got {gain}"
 
-def test_set_gain(device_control, mock_rtl, mock_handle):
-    device = SDRDevice(
-        index=0,
-        name="Device1",
-        serial="Serial1",
-        manufacturer="Manufacturer1",
-        product="Product1"
-    )
-    device_control.set_gain(device, 15)
-    mock_rtl.rtlsdr_set_tuner_gain.assert_called_with(mock_handle, 15)
+def test_get_gain(sdr_device_control, sdr_device):
+    gain = sdr_device_control.get_gain(sdr_device)
+    assert gain >= 0, f"Expected a non-negative gain, got {gain}"
 
-def test_get_gain(device_control, mock_rtl, mock_handle):
-    device = SDRDevice(
-        index=0,
-        name="Device1",
-        serial="Serial1",
-        manufacturer="Manufacturer1",
-        product="Product1"
-    )
-    gain = device_control.get_gain(device)
-    assert gain == 10
-    mock_rtl.rtlsdr_get_tuner_gain.assert_called_with(mock_handle)
+def test_start_and_stop_stream(sdr_device_control, sdr_device):
+    callback_results = []
 
-def test_start_and_stop_stream(device_control, mock_rtl, mock_handle):
-    device = SDRDevice(
-        index=0,
-        name="Device1",
-        serial="Serial1",
-        manufacturer="Manufacturer1",
-        product="Product1"
-    )
+    def callback(data):
+        callback_results.append(data)
 
-    # Mock read_async and cancel_async
-    with patch('src.ddrtlsdr.device_control.read_async') as mock_read_async, \
-         patch('src.ddrtlsdr.device_control.cancel_async') as mock_cancel_async:
-        
-        callback = MagicMock()
-        device_control.start_stream(device, callback, buffer_size=16384)
-        mock_read_async.assert_called_once_with(
-            mock_handle,
-            device_control.streams[device.serial].c_callback,
-            None,
-            1,  # Realtime flag
-            16384
-        )
-        assert device.serial in device_control.streams
+    buffer_size = 16384
 
-        device_control.stop_stream(device)
-        mock_cancel_async.assert_called_once_with(mock_handle)
-        assert device.serial not in device_control.streams
+    try:
+        sdr_device_control.start_stream(sdr_device, callback, buffer_size)
+        # Allow the stream to run briefly to collect data
+        import time
+        time.sleep(1)  # Stream for 1 second
+    finally:
+        sdr_device_control.stop_stream(sdr_device)
+
+    assert len(callback_results) > 0, "Stream did not produce any data."
