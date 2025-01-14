@@ -7,4 +7,4 @@ coverage
 # temporary
 fastapi
 uvicorn
-pyqt
+pyqt5
