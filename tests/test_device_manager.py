@@ -8,18 +8,13 @@ from src.ddrtlsdr.models import SDRDevice, SDRConfig
 
 @pytest.fixture
 def mock_rtl(mocker):
-    with patch('src.ddrtlsdr.device_manager.rtl') as mock_rtl_lib:
+    with patch('src.ddrtlsdr.librtlsdr_wrapper.rtl') as mock_rtl_lib:
         mock_rtl_lib.rtlsdr_get_device_count.return_value = 2
         mock_rtl_lib.rtlsdr_get_device_name.side_effect = [b'Device1', b'Device2']
         mock_rtl_lib.rtlsdr_get_device_usb_strings.side_effect = [
             0,  # Success for first device
             0   # Success for second device
         ]
-        mock_rtl_lib.rtlsdr_get_device_usb_strings.return_value = 0
-        mock_rtl_lib.rtlsdr_get_device_usb_strings = MagicMock(side_effect=[
-            0,  # Device 1
-            0   # Device 2
-        ])
         return mock_rtl_lib
 
 @pytest.fixture
@@ -29,14 +24,6 @@ def device_manager(mock_rtl, tmp_path):
 
 def test_enumerate_devices(device_manager, mock_rtl):
     # Mock USB string buffers
-    mock_rtl.rtlsdr_get_device_usb_strings.side_effect = [
-        0,  # Success
-        0   # Success
-    ]
-
-    mock_rtl.rtlsdr_get_device_usb_strings.return_value = 0
-
-    # Mock the content of USB strings
     def mock_get_device_usb_strings(i, manufacturer, product, serial):
         if i == 0:
             manufacturer.value = b'Manufacturer1'
@@ -91,15 +78,15 @@ def test_verify_device_accessibility_success(device_manager, mock_rtl):
     )
 
     # Mock open_device and close_device to succeed
-    with patch('src.ddrtlsdr.device_manager.open_device') as mock_open, \
-         patch('src.ddrtlsdr.device_manager.close_device') as mock_close:
+    with patch('src.ddrtlsdr.librtlsdr_wrapper.open_device') as mock_open, \
+         patch('src.ddrtlsdr.librtlsdr_wrapper.close_device') as mock_close:
         mock_open.return_value = MagicMock()
         mock_close.return_value = None
 
         accessible = device_manager.verify_device_accessibility(device)
         assert accessible
         mock_open.assert_called_once_with(0)
-        mock_close.assert_called_once()
+        mock_close.assert_called_once_with(MagicMock())
 
 def test_verify_device_accessibility_failure(device_manager, mock_rtl):
     device = SDRDevice(
@@ -111,6 +98,6 @@ def test_verify_device_accessibility_failure(device_manager, mock_rtl):
     )
 
     # Mock open_device to raise IOError
-    with patch('src.ddrtlsdr.device_manager.open_device', side_effect=IOError("Device locked")):
+    with patch('src.ddrtlsdr.librtlsdr_wrapper.open_device', side_effect=IOError("Device locked")):
         accessible = device_manager.verify_device_accessibility(device)
         assert not accessible
