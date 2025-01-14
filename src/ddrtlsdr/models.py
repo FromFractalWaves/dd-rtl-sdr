@@ -21,9 +21,9 @@ class SDRConfig(BaseModel):
 
     def save(self, file_path: str):
         with open(file_path, "w") as f:
-            f.write(self.json(indent=4))
+            f.write(self.model_dump_json(indent=4))  # Updated method
 
     @staticmethod
     def load(file_path: str):
         with open(file_path, "r") as f:
-            return SDRConfig.parse_raw(f.read())
+            return SDRConfig.model_validate_json(f.read())  # Updated method
