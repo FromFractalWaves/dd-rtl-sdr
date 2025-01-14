@@ -8,7 +8,7 @@ from src.ddrtlsdr.models import SDRDevice
 
 @pytest.fixture
 def mock_rtl(mocker):
-    with patch('src.ddrtlsdr.device_control.rtl') as mock_rtl_lib:
+    with patch('src.ddrtlsdr.librtlsdr_wrapper.rtl') as mock_rtl_lib:
         mock_rtl_lib.rtlsdr_open.return_value = 0
         mock_rtl_lib.rtlsdr_close.return_value = None
         mock_rtl_lib.rtlsdr_set_center_freq.return_value = 0
