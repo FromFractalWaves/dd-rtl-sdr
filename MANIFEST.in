@@ -1,0 +1,2 @@
+include src/ddrtlsdr/config.json
+recursive-include src/ddrtlsdr/logs *
