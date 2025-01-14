@@ -1,9 +1,8 @@
-# src/ddrtlsdr/modesl.py
-
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, ConfigDict
 from typing import List
 
 class SDRDevice(BaseModel):
+    model_config = ConfigDict(strict=True)  # Enables stricter validation
     index: int = Field(..., ge=0, description="Device index")
     name: str = Field(..., description="Device name")
     serial: str = Field(..., description="Device serial number")
@@ -11,9 +10,9 @@ class SDRDevice(BaseModel):
     product: str = Field(..., description="Device product name")
 
     @field_validator('name', 'serial', 'manufacturer', 'product')
-    def not_empty(cls, v, field):
+    def not_empty(cls, v):
         if not v.strip():
-            raise ValueError(f"{field.name} cannot be empty")
+            raise ValueError("Field cannot be empty")
         return v
 
 class SDRConfig(BaseModel):
