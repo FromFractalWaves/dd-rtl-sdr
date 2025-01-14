@@ -67,13 +67,19 @@ def test_verify_device_accessibility_success(device_manager, mock_rtl):
         product="Product1"
     )
 
-    # Mock open_device and close_device to succeed
-    with patch('src.ddrtlsdr.device_manager.open_device', return_value=MagicMock()) as mock_open, \
-         patch('src.ddrtlsdr.device_manager.close_device', return_value=None) as mock_close:
+    # Create a consistent MagicMock for the device handle
+    mock_handle = MagicMock()
+
+    # Mock open_device and close_device with consistent handle
+    with patch("src.ddrtlsdr.device_manager.open_device", return_value=mock_handle) as mock_open, \
+         patch("src.ddrtlsdr.device_manager.close_device") as mock_close:
         accessible = device_manager.verify_device_accessibility(device)
+
+        # Validate results
         assert accessible
         mock_open.assert_called_once_with(0)
-        mock_close.assert_called_once_with(MagicMock())
+        mock_close.assert_called_once_with(mock_handle)
+
 
 def test_verify_device_accessibility_failure(device_manager, mock_rtl):
     device = SDRDevice(
