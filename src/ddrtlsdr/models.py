@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field, field_validator, ConfigDict
 from typing import List
 
 class SDRDevice(BaseModel):
-    model_config = ConfigDict(strict=True)  # Enables stricter validation
+    model_config = ConfigDict(strict=True)  # Ensures stricter validation
     index: int = Field(..., ge=0, description="Device index")
     name: str = Field(..., description="Device name")
     serial: str = Field(..., description="Device serial number")
@@ -10,9 +10,9 @@ class SDRDevice(BaseModel):
     product: str = Field(..., description="Device product name")
 
     @field_validator('name', 'serial', 'manufacturer', 'product')
-    def not_empty(cls, v):
+    def not_empty(cls, v, info):
         if not v.strip():
-            raise ValueError("Field cannot be empty")
+            raise ValueError(f"{info.field_name} cannot be empty")
         return v
 
 class SDRConfig(BaseModel):
