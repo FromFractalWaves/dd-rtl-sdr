@@ -84,3 +84,17 @@ def test_verify_device_accessibility_success(device_manager, mock_rtl):
         assert accessible
         mock_open.assert_called_once_with(0)
         mock_close.assert_called_once_with(MagicMock())
+
+def test_verify_device_accessibility_failure(device_manager, mock_rtl):
+    device = SDRDevice(
+        index=0,
+        name="Device1",
+        serial="Serial1",
+        manufacturer="Manufacturer1",
+        product="Product1"
+    )
+
+    # Mock open_device to raise IOError
+    with patch('src.ddrtlsdr.device_manager.open_device', side_effect=IOError("Device locked")):
+        accessible = device_manager.verify_device_accessibility(device)
+        assert not accessible
