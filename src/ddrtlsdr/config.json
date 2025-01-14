@@ -1,3 +1,11 @@
 {
-    "devices": []
+    "devices": [
+        {
+            "index": 0,
+            "name": "Unknown",
+            "serial": "00000001",
+            "manufacturer": "RTLSDRBlog",
+            "product": "Blog V4"
+        }
+    ]
 }

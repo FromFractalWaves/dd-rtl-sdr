@@ -73,6 +73,14 @@ class DeviceControl:
         self.streams = {}  # Maps device serial to SDRStream
         self.open_handles = {}  # Cache of open device handles
 
+    def list_devices(self):
+        """List all devices managed by the DeviceManager"""
+        return self.manager.config.devices
+
+    def is_device_open(self, device: SDRDevice) -> bool:
+        """Check if a device is currently open."""
+        return device.serial in self.open_handles
+
     def open_device_cached(self, device: SDRDevice):
         if device.serial not in self.open_handles:
             handle = open_device(device.index)
