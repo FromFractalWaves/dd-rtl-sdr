@@ -6,6 +6,7 @@ import ctypes
 from typing import Callable, Optional
 
 from .device_manager import DeviceManager, SDRDevice
+from .device_control import DeviceControlManager
 from .librtlsdr_wrapper import (
     open_device,
     close_device,
