@@ -1,5 +1,3 @@
-# tests/test_models.py
-
 import pytest
 from src.ddrtlsdr.models import SDRDevice, SDRConfig
 
