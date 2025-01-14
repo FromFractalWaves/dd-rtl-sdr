@@ -53,32 +53,33 @@ class DeviceManager:
         logger.info(f"Number of RTL-SDR devices found: {count}")
         discovered_devices = []
         for i in range(count):
-            # Retrieve device name using the rtl instance from the wrapper
-            name_ptr = rtl.rtlsdr_get_device_name(i)
-            name = name_ptr.decode("utf-8") if name_ptr else "Unknown"
+            # Retrieve device name
+            try:
+                name_ptr = rtl.rtlsdr_get_device_name(i)
+                name = name_ptr.decode("utf-8") if isinstance(name_ptr, bytes) else "Unknown"
+            except Exception as e:
+                logger.error(f"Failed to get device name for index {i}: {e}")
+                name = "Unknown"
 
             # Prepare buffers for USB strings
             serial = ctypes.create_string_buffer(256)
             manufacturer = ctypes.create_string_buffer(256)
             product = ctypes.create_string_buffer(256)
 
-            # Retrieve USB strings using the rtl instance from the wrapper
-            result = rtl.rtlsdr_get_device_usb_strings(
-                i,
-                manufacturer,
-                product,
-                serial,
-            )
-            if result != 0:
-                logger.error(f"Failed to get USB strings for device {i}.")
-                serial_value = "Unknown"
-                manufacturer_value = "Unknown"
-                product_value = "Unknown"
+            # Retrieve USB strings
+            try:
+                result = rtl.rtlsdr_get_device_usb_strings(i, manufacturer, product, serial)
+                if result != 0:
+                    raise IOError(f"Failed to retrieve USB strings for device {i}.")
+            except Exception as e:
+                logger.error(f"Failed to retrieve USB strings for device {i}: {e}")
+                serial_value = manufacturer_value = product_value = "Unknown"
             else:
                 serial_value = serial.value.decode("utf-8") if serial.value else "Unknown"
                 manufacturer_value = manufacturer.value.decode("utf-8") if manufacturer.value else "Unknown"
                 product_value = product.value.decode("utf-8") if product.value else "Unknown"
 
+            # Create and validate SDRDevice
             try:
                 device = SDRDevice(
                     index=i,
@@ -92,7 +93,7 @@ class DeviceManager:
             except ValueError as ve:
                 logger.error(f"Validation failed for device {i}: {ve}")
 
-        # Merge with existing devices to preserve additional configurations
+        # Merge new devices with existing config
         existing_serials = {dev.serial for dev in self.config.devices}
         for device in discovered_devices:
             if device.serial not in existing_serials:
