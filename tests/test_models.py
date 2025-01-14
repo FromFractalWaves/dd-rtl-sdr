@@ -18,7 +18,7 @@ def test_sdr_device_valid():
     assert device.product == "Product1"
 
 def test_sdr_device_invalid_empty_fields():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError) as excinfo:
         SDRDevice(
             index=0,
             name="",
@@ -26,7 +26,9 @@ def test_sdr_device_invalid_empty_fields():
             manufacturer="Manufacturer1",
             product="Product1"
         )
-    with pytest.raises(ValueError):
+    assert "name cannot be empty" in str(excinfo.value)
+
+    with pytest.raises(ValueError) as excinfo:
         SDRDevice(
             index=0,
             name="Device1",
@@ -34,6 +36,7 @@ def test_sdr_device_invalid_empty_fields():
             manufacturer="Manufacturer1",
             product="Product1"
         )
+    assert "serial cannot be empty" in str(excinfo.value)
 
 def test_sdr_config_save_load(tmp_path):
     config = SDRConfig(devices=[
