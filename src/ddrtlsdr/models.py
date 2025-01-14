@@ -13,7 +13,7 @@ class SDRDevice(BaseModel):
     @field_validator('serial')
     def serial_not_empty(cls, v):
         if not v:
-            raise ValueError("serial cannot be empty")
+            raise ValueError(f"{field.name} cannot be empty")
         return v
 
     @field_validator('manufacturer')
