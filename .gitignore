@@ -1,0 +1,249 @@
+# ctrees outputs
+*ctrees*
+*/core/tests
+**/core/tests
+
+# Virtual Environment Directories
+venv/
+env/
+ENV/
+.pyenv/
+pip-selfcheck.json
+__pycache__/
+
+# Ignore all directories containing Python virtual environments
+*/bin
+*/include
+*/share
+*/lib
+*/lib64
+*/lib/python*/site-packages/
+*/pyvenv.cfg
+
+**/bin
+**/include
+**/share
+**/lib
+**/lib64
+**/lib/python*/site-packages/
+**/pyvenv.cfg
+
+# Python Byte Code
+*.py[cod]
+*$py.class
+
+# Python Eggs and Wheel Files
+*.egg
+*.egg-info/
+dist/
+build/
+*.whl
+
+# C Extensions
+*.so
+
+# Editor and IDE Config Files
+.vscode/
+.idea/
+*.sublime-*
+*.code-workspace
+*.project
+*.workspace
+*.tmproj
+*.tmproject
+*.nbactions.xml
+*.nb-configuration.xml
+nbproject/
+nbbuild/
+/.metadata
+/.recommenders
+.classpath
+.project
+.settings/
+out/
+gen/
+
+# Node.js and npm
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+package-lock.json
+yarn.lock
+.pnpm-debug.log
+
+# Java and Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+.settings/
+.classpath
+.project
+.gradle/
+build/
+*.jar
+*.war
+*.ear
+
+# C, C++, and Other Compiled Languages
+*.obj
+*.o
+*.a
+*.lib
+*.dll
+*.so
+*.dylib
+*.exe
+*.out
+*.class
+*.lo
+*.slo
+*.pdb
+.vs/
+[Bb]in/
+[Dd]ebug*/
+[Rr]elease*/
+
+# Logs and Temp Files
+*.log
+logs/
+*.tmp
+*.swp
+*.swo
+*.DS_Store
+Thumbs.db
+ehthumbs.db
+*.stackdump
+*.pid
+
+# Archives and Compressed Files
+*.zip
+*.rar
+*.7z
+*.tar
+*.gz
+*.bz2
+*.xz
+*.tgz
+
+# Database and Runtime Files
+db.sqlite3
+*.db-journal
+*.db-wal
+*.db-shm
+
+# macOS System Files
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+.Spotlight-V100
+.Trashes
+._*
+
+# Linux System Files
+*~
+.profile
+.bash_history
+.history
+.swp
+.directory
+
+# Windows System Files
+Desktop.ini
+Thumbs.db
+ehthumbs.db
+$RECYCLE.BIN/
+
+# Temporary and Backup Files
+*.bak
+*.backup
+*.~*
+~$*
+
+# Ansible, Terraform, and Kubernetes
+*.tfstate
+*.tfstate.*
+*.tfplan
+.kube/
+.kubectl.cache
+terraform.tfvars
+.ansible/
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+*.dockerfile
+*.envrc
+
+# Git Files
+*.orig
+*.rej
+*.gitattributes
+
+# Go
+*.exe
+*.test
+*.out
+*.mod
+*.sum
+vendor/
+gopath/
+
+# Rust
+/target/
+**/*.rs.bk
+
+# Ruby and Gems
+*.gem
+/coverage/
+/spec/reports/
+.ruby-version
+.ruby-gemset
+
+# PHP
+/vendor/
+.phpunit.result.cache
+*.phpunit.cache
+
+# Swift and iOS/macOS Development
+*.xcworkspace
+*.xcuserstate
+*.xcodeproj/
+*.pbxproj
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.hmap
+*.ipa
+
+# Android
+*.apk
+*.ap_
+*.dex
+*.keystore
+caches/
+captures/
+output.json
+
+# Miscellaneous
+*.iml
+*.ipr
+*.iws
+*.session
+*.nlog
+*.vssettings
+*.userprefs
+/target/
+project.lock.json
+.nuget/
+*.deploy
+
+# Additional Security Measures
+.env
+*.key
+*.pem
+*.crt
+*.pfx
+*.asc
