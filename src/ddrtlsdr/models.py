@@ -10,10 +10,22 @@ class SDRDevice(BaseModel):
     manufacturer: str = Field(..., description="Device manufacturer")
     product: str = Field(..., description="Device product name")
 
-    @field_validator('serial', 'manufacturer', 'product')
-    def not_empty(cls, v, field):
+    @field_validator('serial')
+    def serial_not_empty(cls, v):
         if not v:
-            raise ValueError(f"{field.name} cannot be empty")
+            raise ValueError("serial cannot be empty")
+        return v
+
+    @field_validator('manufacturer')
+    def manufacturer_not_empty(cls, v):
+        if not v:
+            raise ValueError("manufacturer cannot be empty")
+        return v
+
+    @field_validator('product')
+    def product_not_empty(cls, v):
+        if not v:
+            raise ValueError("product cannot be empty")
         return v
 
 class SDRConfig(BaseModel):
